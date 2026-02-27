@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>ZilPay | EIP-1193 Test Suite</title>
-    <link rel="icon" type="image/x-icon" href="https://zilpay.io/favicon/favicon.ico">
+    <title>Bearby | EIP-1193 Test Suite</title>
+    <link rel="icon" type="image/x-icon" href="https://bearby.io/favicon/favicon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="description" content="Test description for ZilPay">
-    <meta name="title" content="ZilPay EIP-1193 Test Suite">
+    <meta name="description" content="Test description for Bearby">
+    <meta name="title" content="Bearby EIP-1193 Test Suite">
     <meta name="colors" content='{"primary": "#007bff", "secondary": "#0056b3", "background": "#f0f0f0", "text": "#000000"}'>
     <style>
         * {
@@ -180,7 +180,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🦊 ZilPay EIP-1193 Test Suite</h1>
+            <h1>🐻 Bearby EIP-1193 Test Suite</h1>
             <div class="status" id="status">Not Connected</div>
             <div style="margin-top: 10px; font-size: 14px;" id="accountInfo"></div>
             <div style="margin-top: 5px; font-size: 14px;" id="chainInfo"></div>
@@ -370,7 +370,7 @@
 
         async function checkProvider() {
             if (!window.ethereum) {
-                log('Error', 'Ethereum provider not found. Please install ZilPay or MetaMask.', 'error');
+                log('Error', 'Ethereum provider not found. Please install Bearby or MetaMask.', 'error');
                 return false;
             }
             return true;
@@ -624,7 +624,7 @@
                     log('Error', 'No accounts. Connect wallet first.', 'error');
                     return;
                 }
-                const message = 'Hello from ZilPay Test Suite! 👋';
+                const message = 'Hello from Bearby Test Suite! 👋';
                 const signature = await window.ethereum.request({
                     method: 'personal_sign',
                     params: [message, accounts[0]]
@@ -688,7 +688,7 @@
                     },
                     primaryType: 'Mail',
                     domain: {
-                        name: 'ZilPay Test',
+                        name: 'Bearby Test',
                         version: '1',
                         chainId: parseInt(chainId, 16),
                         verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC'
@@ -702,7 +702,7 @@
                             name: 'Bob',
                             wallet: accounts[0]
                         },
-                        contents: 'Hello Bob! This is a test message from ZilPay.'
+                        contents: 'Hello Bob! This is a test message from Bearby.'
                     }
                 };
                 
@@ -1053,12 +1053,12 @@
 
         // Initialize
         window.addEventListener('load', () => {
-            log('Ready', 'ZilPay EIP-1193 Test Suite loaded successfully', 'success');
+            log('Ready', 'Bearby EIP-1193 Test Suite loaded successfully', 'success');
             if (window.ethereum) {
                 log('Provider Detected', {
                     isZilPay: window.ethereum.isZilPay || false,
-                    isMetaMask: window.ethereum.isMetaMask || false,
-                    isBearby: window.ethereum.isBearby || false
+                    isBearby: window.ethereum.isBearby || false,
+                    isMetaMask: window.ethereum.isMetaMask || false
                 }, 'info');
             }
         });

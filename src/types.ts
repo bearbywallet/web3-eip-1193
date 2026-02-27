@@ -26,7 +26,7 @@ export interface EthSubscription extends ProviderMessage {
   };
 }
 
-export interface ZilPayProvider {
+export interface BearbyProvider {
   readonly isZilPay: boolean;
   readonly isMetaMask: boolean;
   readonly isBearby: boolean;
@@ -44,12 +44,12 @@ export interface ZilPayProvider {
   enable(): Promise<string[]>;
 }
 
-export interface ZilPayEventData {
+export interface BearbyEventData {
   event: string;
   data: ProviderConnectInfo | ProviderRpcError | string | string[] | ProviderMessage;
 }
 
-export interface ZilPayResponseData {
+export interface BearbyResponseData {
   type: string;
   uuid: string;
   payload: {
@@ -78,7 +78,7 @@ export interface EIP6963ProviderInfo {
 
 export interface EIP6963ProviderDetail {
   info: EIP6963ProviderInfo;
-  provider: ZilPayProvider;
+  provider: BearbyProvider;
 }
 
 export interface EIP6963RequestProviderEvent extends Event {

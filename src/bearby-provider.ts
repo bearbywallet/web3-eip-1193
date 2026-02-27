@@ -1,6 +1,6 @@
 import { getFavicon } from './favicon';
 import { getMetaDataFromTags } from './meta';
-import type { ProviderRpcError, RequestPayload, ZilPayProvider, ProviderConnectInfo, ProviderMessage, ZilPayEventData } from './types';
+import type { ProviderRpcError, RequestPayload, BearbyProvider, ProviderConnectInfo, ProviderMessage, BearbyEventData } from './types';
 
 const BEARBY_INJECTED_EVENT = '@/BearBy/injected-script';
 const BEARBY_CONTENT_EVENT = '@/BearBy/content-script';
@@ -11,7 +11,7 @@ const MESSAGE_TYPE = {
   EVENT: 'BEARBY_EVENT',
 } as const;
 
-export class ZilPayProviderImpl implements ZilPayProvider {
+export class BearbyProviderImpl implements BearbyProvider {
   readonly isZilPay: boolean = true;
   readonly isBearby: boolean = true;
   readonly isMetaMask: boolean = true;
@@ -70,7 +70,7 @@ export class ZilPayProviderImpl implements ZilPayProvider {
 
   #setupFlutterEventHandler() {
     if (typeof window !== 'undefined' && window) {
-      (window as any).handleZilPayEvent = (eventData: ZilPayEventData) => {
+      (window as any).handleBearbyEvent = (eventData: BearbyEventData) => {
         const listeners = this.#eventListeners.get(eventData.event);
         if (listeners) {
           switch (eventData.event) {
@@ -110,8 +110,8 @@ export class ZilPayProviderImpl implements ZilPayProvider {
       try {
         const msg = typeof detail === 'string' ? JSON.parse(detail) : detail;
         
-        if (msg.type === MESSAGE_TYPE.EVENT && (window as any).handleZilPayEvent) {
-          (window as any).handleZilPayEvent(msg.payload);
+        if (msg.type === MESSAGE_TYPE.EVENT && (window as any).handleBearbyEvent) {
+          (window as any).handleBearbyEvent(msg.payload);
         }
       } catch (error) {
         console.error('Error parsing BearBy event:', error);
