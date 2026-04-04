@@ -50,14 +50,15 @@ export class BearbyProviderImpl implements BearbyProvider {
     'eth_decrypt'
   ]);
   #eventListeners: Map<string, Set<(...args: any[]) => void>> = new Map();
-  #isFlutterMode: boolean = typeof window !== 'undefined' && typeof (window as any).flutter_inappwebview !== 'undefined';
+
+  get #isFlutterMode(): boolean {
+    return typeof window !== 'undefined' && typeof (window as any).flutter_inappwebview !== 'undefined';
+  }
 
   constructor() {
     this.#initializeEvents();
     this.#setupFlutterEventHandler();
-    if (!this.#isFlutterMode) {
-      this.#setupDocumentListener();
-    }
+    this.#setupDocumentListener();
   }
 
   #initializeEvents() {
