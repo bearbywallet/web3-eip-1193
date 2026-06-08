@@ -269,6 +269,13 @@ export class BearbyProviderImpl implements BearbyProvider {
     return this.request({ method: 'eth_requestAccounts' }) as Promise<string[]>;
   }
 
+  setAppInfo(
+    _appName: string,
+    _appLogoUrl: string | null,
+    _appChainIds: number[],
+    _preference?: unknown
+  ): void {}
+
   on(event: 'connect', callback: (info: ProviderConnectInfo) => void): void;
   on(event: 'disconnect', callback: (error: ProviderRpcError) => void): void;
   on(event: 'chainChanged', callback: (chainId: string) => void): void;

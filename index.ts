@@ -30,6 +30,8 @@ export * from './src/bearby-provider';
       }
     }
 
+    (window as any).coinbaseWalletExtension = provider;
+
     announceProvider(provider);
     setupEIP6963RequestListener(provider);
 

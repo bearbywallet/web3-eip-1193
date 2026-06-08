@@ -42,6 +42,7 @@ export interface BearbyProvider {
   removeListener(event: 'accountsChanged', callback: (accounts: string[]) => void): void;
   removeListener(event: 'message', callback: (message: ProviderMessage) => void): void;
   enable(): Promise<string[]>;
+  setAppInfo(appName: string, appLogoUrl: string | null, appChainIds: number[], preference?: unknown): void;
 }
 
 export interface BearbyEventData {
