@@ -1,6 +1,6 @@
 {
   "name": "@bearby/web3-evm",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A Web3 provider for the Bearby wallet to interact with EVM-compatible chains.",
   "author": "Rinat lich666black@gmail.com",
   "license": "MIT",
