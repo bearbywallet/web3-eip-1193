@@ -150,9 +150,20 @@ export class BearbyProviderImpl implements BearbyProvider {
         ...meta,
       };
 
-      if (typeof window === 'undefined' || !window || !(window as any).flutter_inappwebview) {
+      const flutterBridge = (typeof window !== 'undefined' && window) ? (window as any).flutter_inappwebview : null;
+
+      if (!flutterBridge) {
         reject({
-          message: 'BearBy channel is not available',
+          message: 'BearBy flutter bridge is not available',
+          code: 4900,
+          data: null,
+        } as ProviderRpcError);
+        return;
+      }
+
+      if (typeof flutterBridge.callHandler !== 'function') {
+        reject({
+          message: 'BearBy flutter bridge is not fully initialized (callHandler missing)',
           code: 4900,
           data: null,
         } as ProviderRpcError);
@@ -180,7 +191,7 @@ export class BearbyProviderImpl implements BearbyProvider {
       window.addEventListener('message', responseHandler);
 
       try {
-        (window as any).flutter_inappwebview.callHandler('EIP1193Channel', JSON.stringify(message))
+        flutterBridge.callHandler('EIP1193Channel', JSON.stringify(message))
           .catch((error: any) => {
             window.removeEventListener('message', responseHandler);
             reject({
