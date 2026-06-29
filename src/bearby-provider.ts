@@ -52,7 +52,9 @@ export class BearbyProviderImpl implements BearbyProvider {
   #eventListeners: Map<string, Set<(...args: any[]) => void>> = new Map();
 
   get #isFlutterMode(): boolean {
-    return typeof window !== 'undefined' && typeof (window as any).flutter_inappwebview !== 'undefined';
+    return typeof window !== 'undefined'
+      && typeof (window as any).flutter_inappwebview !== 'undefined'
+      && typeof (window as any).flutter_inappwebview.callHandler === 'function';
   }
 
   constructor() {
@@ -136,49 +138,31 @@ export class BearbyProviderImpl implements BearbyProvider {
     return this.#requestExtension(payload);
   }
 
-  async #requestFlutter(payload: RequestPayload): Promise<unknown> {
+  #requestFlutter(payload: RequestPayload): Promise<unknown> {
     const icon = getFavicon();
-    const uuid = Math.random().toString(36).substring(2);
-    const meta = getMetaDataFromTags();
-    const message = {
-      type: MESSAGE_TYPE.REQUEST,
-      uuid,
-      payload,
-      icon,
-      ...meta,
-    };
-
-    const flutterBridge = (typeof window !== 'undefined' && window) ? (window as any).flutter_inappwebview : null;
-
-    if (!flutterBridge) {
-      return Promise.reject({
-        message: 'BearBy flutter bridge is not available',
-        code: 4900,
-        data: null,
-      } as ProviderRpcError);
-    }
-
-    // Poll for callHandler — the Flutter bridge may inject it asynchronously
-    let callHandlerReady = false;
-    for (let attempt = 0; attempt < 5; attempt++) {
-      if (typeof flutterBridge.callHandler === 'function') {
-        callHandlerReady = true;
-        break;
-      }
-      if (attempt < 4) {
-        await new Promise(r => setTimeout(r, 100 * Math.pow(2, attempt)));
-      }
-    }
-
-    if (!callHandlerReady) {
-      return Promise.reject({
-        message: 'BearBy flutter bridge is not fully initialized (callHandler missing after retries)',
-        code: 4900,
-        data: null,
-      } as ProviderRpcError);
-    }
 
     return new Promise((resolve, reject) => {
+      const uuid = Math.random().toString(36).substring(2);
+      const meta = getMetaDataFromTags();
+      const message = {
+        type: MESSAGE_TYPE.REQUEST,
+        uuid,
+        payload,
+        icon,
+        ...meta,
+      };
+
+      const flutterBridge = (typeof window !== 'undefined' && window) ? (window as any).flutter_inappwebview : null;
+
+      if (!flutterBridge || typeof flutterBridge.callHandler !== 'function') {
+        reject({
+          message: 'BearBy flutter bridge is not available',
+          code: 4900,
+          data: null,
+        } as ProviderRpcError);
+        return;
+      }
+    
       const responseHandler = (event: MessageEvent) => {
         let data = event.data;
         if (!data || typeof data !== 'object') return;
