@@ -15,6 +15,7 @@ export class BearbyProviderImpl implements BearbyProvider {
   readonly isZilPay: boolean = true;
   readonly isBearby: boolean = true;
   readonly isMetaMask: boolean = true;
+  readonly isCoinbaseWallet: boolean = true;
   readonly supportedMethods: Set<string> = new Set([
     'eth_requestAccounts',
     'eth_accounts',
@@ -50,6 +51,7 @@ export class BearbyProviderImpl implements BearbyProvider {
     'eth_decrypt'
   ]);
   #eventListeners: Map<string, Set<(...args: any[]) => void>> = new Map();
+  #chainId: number = 1;
 
   get #isFlutterMode(): boolean {
     return typeof window !== 'undefined'
@@ -88,6 +90,10 @@ export class BearbyProviderImpl implements BearbyProvider {
               if (typeof chainId !== 'string' || !chainId.startsWith('0x')) {
                 console.warn('Invalid chainId format for chainChanged event');
                 return;
+              }
+              const parsedChainId = parseInt(chainId, 16);
+              if (!Number.isNaN(parsedChainId)) {
+                this.#chainId = parsedChainId;
               }
               listeners.forEach(callback => callback(chainId));
               break;
@@ -131,11 +137,18 @@ export class BearbyProviderImpl implements BearbyProvider {
       } as ProviderRpcError);
     }
 
-    if (this.#isFlutterMode) {
-      return this.#requestFlutter(payload);
+    const result = this.#isFlutterMode
+      ? await this.#requestFlutter(payload)
+      : await this.#requestExtension(payload);
+
+    if (payload.method === 'eth_chainId' && typeof result === 'string' && result.startsWith('0x')) {
+      const parsedChainId = parseInt(result, 16);
+      if (!Number.isNaN(parsedChainId)) {
+        this.#chainId = parsedChainId;
+      }
     }
 
-    return this.#requestExtension(payload);
+    return result;
   }
 
   #requestFlutter(payload: RequestPayload): Promise<unknown> {
@@ -275,10 +288,26 @@ export class BearbyProviderImpl implements BearbyProvider {
 
   setAppInfo(
     _appName: string,
-    _appLogoUrl: string | null,
-    _appChainIds: number[],
+    _appLogoUrl?: string | null,
+    _appChainIds?: number[],
     _preference?: unknown
   ): void {}
+
+  getChainId(): number {
+    return this.#chainId;
+  }
+
+  setProviderInfo(_rpcUrl: string, chainId: number): void {
+    if (typeof chainId === 'number' && !Number.isNaN(chainId)) {
+      this.#chainId = chainId;
+    }
+  }
+
+  disableReloadOnDisconnect(): void {}
+
+  disconnect(): void {}
+
+  close(): void {}
 
   on(event: 'connect', callback: (info: ProviderConnectInfo) => void): void;
   on(event: 'disconnect', callback: (error: ProviderRpcError) => void): void;

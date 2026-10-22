@@ -30,6 +30,7 @@ export interface BearbyProvider {
   readonly isZilPay: boolean;
   readonly isMetaMask: boolean;
   readonly isBearby: boolean;
+  readonly isCoinbaseWallet: boolean;
   request(payload: RequestPayload): Promise<any>;
   on(event: 'connect', callback: (info: ProviderConnectInfo) => void): void;
   on(event: 'disconnect', callback: (error: ProviderRpcError) => void): void;
@@ -42,7 +43,12 @@ export interface BearbyProvider {
   removeListener(event: 'accountsChanged', callback: (accounts: string[]) => void): void;
   removeListener(event: 'message', callback: (message: ProviderMessage) => void): void;
   enable(): Promise<string[]>;
-  setAppInfo(appName: string, appLogoUrl: string | null, appChainIds: number[], preference?: unknown): void;
+  setAppInfo(appName: string, appLogoUrl?: string | null, appChainIds?: number[], preference?: unknown): void;
+  getChainId(): number;
+  setProviderInfo(rpcUrl: string, chainId: number): void;
+  disableReloadOnDisconnect(): void;
+  disconnect(): void;
+  close(): void;
 }
 
 export interface BearbyEventData {
