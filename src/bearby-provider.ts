@@ -1,5 +1,6 @@
 import { getFavicon } from './favicon';
 import { getMetaDataFromTags } from './meta';
+import type { BearbySolanaProvider } from './solana-provider';
 import type { ProviderRpcError, RequestPayload, BearbyProvider, ProviderConnectInfo, ProviderMessage, BearbyEventData } from './types';
 
 const BEARBY_INJECTED_EVENT = '@/BearBy/injected-script';
@@ -48,10 +49,29 @@ export class BearbyProviderImpl implements BearbyProvider {
     'wallet_requestPermissions',
     'wallet_scanQRCode',
     'eth_getEncryptionPublicKey',
-    'eth_decrypt'
+    'eth_decrypt',
+    'web3_clientVersion',
+    'solana_connect',
+    'solana_requestAccounts',
+    'solana_accounts',
+    'solana_disconnect',
+    'solana_signTransaction',
+    'solana_signAllTransactions',
+    'solana_signAndSendTransaction',
+    'solana_signMessage',
+    'solana_signIn',
+    'wallet_createSession',
+    'wallet_getSession',
+    'wallet_revokeSession',
+    'wallet_invokeMethod'
   ]);
   #eventListeners: Map<string, Set<(...args: any[]) => void>> = new Map();
   #chainId: number = 1;
+  #solanaProvider: BearbySolanaProvider | null = null;
+
+  setSolanaProvider(solanaProvider: BearbySolanaProvider): void {
+    this.#solanaProvider = solanaProvider;
+  }
 
   get #isFlutterMode(): boolean {
     return typeof window !== 'undefined'
@@ -76,6 +96,15 @@ export class BearbyProviderImpl implements BearbyProvider {
   #setupFlutterEventHandler() {
     if (typeof window !== 'undefined' && window) {
       (window as any).handleBearbyEvent = (eventData: BearbyEventData) => {
+        if ((eventData as any).event === 'solanaAccountChanged') {
+          this.#solanaProvider?.handleAccountChanged(eventData.data as any);
+          return;
+        }
+        if (eventData.event === 'accountsChanged') {
+          this.#solanaProvider?.handleAccountChanged(eventData.data as any);
+        } else if (eventData.event === 'disconnect') {
+          this.#solanaProvider?.handleDisconnect();
+        }
         const listeners = this.#eventListeners.get(eventData.event);
         if (listeners) {
           switch (eventData.event) {

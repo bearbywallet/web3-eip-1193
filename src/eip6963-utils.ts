@@ -1,38 +1,70 @@
 import type { EIP6963ProviderInfo, EIP6963ProviderDetail, BearbyProvider } from './types';
 import { uuidv4 } from './uuid';
 
-let providerInfo: EIP6963ProviderInfo | null = null;
+let providerInfos: EIP6963ProviderInfo[] | null = null;
 
 export function getOrCreateBearbyProviderInfo(): EIP6963ProviderInfo {
-  if (!providerInfo) {
-    providerInfo = {
-      uuid: uuidv4(),
-      name: "Bearby Wallet",
-      icon: getBearbyIcon(),
-      rdns: "io.bearby"
-    };
-  }
-  return providerInfo;
+  return getOrCreateEIP6963ProviderInfos()[0];
 }
 
-function getBearbyIcon(): string {
+export function getOrCreateEIP6963ProviderInfos(): EIP6963ProviderInfo[] {
+  if (!providerInfos) {
+    const icon = getBearbyIcon();
+    providerInfos = [
+      {
+        uuid: uuidv4(),
+        name: "Bearby Wallet",
+        icon,
+        rdns: "io.bearby"
+      },
+      {
+        uuid: uuidv4(),
+        name: "MetaMask",
+        icon,
+        rdns: "io.metamask"
+      },
+      {
+        uuid: uuidv4(),
+        name: "Phantom",
+        icon,
+        rdns: "app.phantom"
+      },
+      {
+        uuid: uuidv4(),
+        name: "Trust Wallet",
+        icon,
+        rdns: "com.trustwallet.app"
+      },
+      {
+        uuid: uuidv4(),
+        name: "Coinbase Wallet",
+        icon,
+        rdns: "com.coinbase.wallet"
+      }
+    ];
+  }
+  return providerInfos;
+}
+
+export function getBearbyIcon(): string {
     return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjM5LjEyNSAyMTUuMzY3QzI1OC4wMTQgMjA0LjM5MiAyNjEuNDc4IDE3NC44NDQgMjQ2Ljg2MSAxNDkuMzY4QzIzMi4yNDUgMTIzLjg5MiAxNDguOTkgNDUuMjAwNSAxNDMuMzY3IDQ4LjQ2NjlDMTM3Ljc0NCA1MS43MzMzIDE2My44NCAxNjMuNjMzIDE3OC40NTcgMTg5LjEwOUMxOTMuMDc0IDIxNC41ODUgMjIwLjIzNSAyMjYuMzQxIDIzOS4xMjUgMjE1LjM2N1pNMzQ1LjQ4NSAzOTcuNDc5QzM2MC42MDEgMzg4LjY5OCAzNzguNzQ3IDM4NS4yNzcgMzk2LjE3IDM4NC4yMTZDNDA3LjE5NiAzODMuNTQ1IDQxOC4yNCAzODAuMzU1IDQyOC40NTggMzc0LjQxOUM0NjMuNjQ5IDM1My45NzMgNDc1LjcwNiAzMDguNjkyIDQ1NS4zODggMjczLjI4QzQzNS4wNzEgMjM3Ljg2NyAzOTAuMDcyIDIyNS43MzUgMzU0Ljg4MSAyNDYuMThDMzQ3Ljc3MiAyNTAuMzA5IDMzOC41MjEgMjQ5Ljc5OSAzMzEuODgyIDI0NC45NDJDMzA5LjA4OSAyMjguMjY3IDI3Ny43NjUgMjI1LjYwNiAyNTEuNzg2IDI0MC42OTlDMjI2LjA2MiAyNTUuNjQ0IDIxMi42OTkgMjgzLjg1OCAyMTUuMzA2IDMxMS43ODlDMjE2LjEyNCAzMjAuNTU1IDIxMS41OTQgMzI5LjQyNiAyMDQuMDE3IDMzMy44MjlDMTY4LjgyNiAzNTQuMjc0IDE1Ni43NjggMzk5LjU1NSAxNzcuMDg2IDQzNC45NjhDMTk3LjQwMyA0NzAuMzggMjQyLjQwMiA0ODIuNTE0IDI3Ny41OTQgNDYyLjA2OEMyODYuNTQgNDU2Ljg3IDI5My45OTEgNDUwLjA2NyAyOTkuNzk1IDQ0Mi4yMjlDMzEyLjM2MSA0MjUuMjYyIDMyNy4yNzUgNDA4LjA1OSAzNDUuNDg1IDM5Ny40NzlaTTMyOC41NjUgMTI2LjI3M0MzNDMuNjYzIDE1Mi41OSAzNDIuNjg4IDE4MS42MDEgMzI2LjM4NyAxOTEuMDcxQzMxMC4wODQgMjAwLjU0MyAyODQuNjMgMTg2Ljg4NyAyNjkuNTMgMTYwLjU3MUMyNjQuNDc0IDE1MS43NTggMjYyLjg2IDEzOS44MTYgMjYxLjA0NiAxMjYuNEMyNTcuNDQ2IDk5Ljc1NzMgMjUzLjA1OCA2Ny4zMDc1IDIxOS4zNjIgNDIuMDMyOEMyNDUuMzM3IDI2Ljk0MjIgMzEzLjQ2NiA5OS45NTc2IDMyOC41NjUgMTI2LjI3M1pNMTc1LjA1NCAyNzguOTkzQzE1OC40OTMgMjg4LjYxNCAxMzIuODI5IDI3NS4wODEgMTE3LjcyOSAyNDguNzY0QzEwMi42MzEgMjIyLjQ0OSA3NC4xNzAyIDEyNi4zODYgMTAwLjU1NyAxMTEuMDU2QzEwNS4yMzIgMTUzLjE5MiAxMzEuMTM1IDE3My4xNDEgMTUyLjQwMyAxODkuNTIxQzE2My4xMTEgMTk3Ljc2NyAxNzIuNjQ0IDIwNS4xMDkgMTc3LjcwMSAyMTMuOTIyQzE5Mi43OTkgMjQwLjIzOSAxOTEuNjE0IDI2OS4zNzIgMTc1LjA1NCAyNzguOTkzWk00MTYuNjY0IDEzOS4wNDVDNDI0LjkzMyAxNjIuMDU2IDQxOC44OTMgMTg2LjM3OSA0MDMuMTc0IDE5My4zN0MzODcuNDU2IDIwMC4zNjIgMzY4LjAxIDE4Ny4zNzUgMzU5Ljc0MiAxNjQuMzY0QzM1Ni45NzMgMTU2LjY1NyAzNTcuNzI2IDE0Ni41MjYgMzU4LjU3MSAxMzUuMTQ1QzM2MC4yNDkgMTEyLjU0MSAzNjIuMjkzIDg1LjAwOTQgMzM3Ljg0MyA2MS43Njk4QzM2Mi44ODggNTAuNjI5NiA0MDguMzk1IDExNi4wMzMgNDE2LjY2NCAxMzkuMDQ1Wk0xMzUuNjMzIDM0OC44MDNDMTIxLjc0NiAzNTkuMDEzIDk3Ljc4MzYgMzUyLjEyMiA4Mi4xMTQgMzMzLjQxMUM2Ni40NDQ1IDMxNC42OTkgMzIuOTI1MSAyNDIuMzI5IDU1LjA1MzkgMjI2LjA1OUM2Mi44MTg2IDI1OC45OTQgODcuNTQyNCAyNzAuOTc0IDEwNy44NDEgMjgwLjgwOEMxMTguMDYyIDI4NS43NiAxMjcuMTYgMjkwLjE2NyAxMzIuNDA4IDI5Ni40MzRDMTQ4LjA3NyAzMTUuMTQ1IDE0OS41MjIgMzM4LjU5MSAxMzUuNjMzIDM0OC44MDNaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMTA4MV8yKSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJwYWludDBfbGluZWFyXzEwODFfMiIgeDE9IjE0Mi4wODkiIHkxPSI0OS4yMDk1IiB4Mj0iMzU1LjYxNiIgeTI9IjQxNi43MzgiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agb2Zmc2V0PSIwLjQyNzA4MyIgc3RvcC1jb2xvcj0iI0U4MDA2RiIvPgo8c3RvcCBvZmZzZXQ9IjAuNzM5NTgzIiBzdG9wLWNvbG9yPSIjQUM1OUZGIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPC9zdmc+Cg==";
 }
 
 export function announceProvider(provider: BearbyProvider): void {
   if (typeof window === 'undefined') return;
 
-  const providerInfo = getOrCreateBearbyProviderInfo();
-  const providerDetail: EIP6963ProviderDetail = {
-    info: providerInfo,
-    provider
-  };
+  for (const info of getOrCreateEIP6963ProviderInfos()) {
+    const providerDetail: EIP6963ProviderDetail = {
+      info,
+      provider
+    };
 
-  const announceEvent = new CustomEvent("eip6963:announceProvider", {
-    detail: Object.freeze(providerDetail)
-  });
+    const announceEvent = new CustomEvent("eip6963:announceProvider", {
+      detail: Object.freeze(providerDetail)
+    });
 
-  window.dispatchEvent(announceEvent);
+    window.dispatchEvent(announceEvent);
+  }
 }
 
 export function setupEIP6963RequestListener(provider: BearbyProvider): void {
