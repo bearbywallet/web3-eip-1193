@@ -238,10 +238,10 @@ export class BearbyStandardWallet {
     }> = [];
 
     for (const input of inputs) {
-      const signedMessage = ensureUint8Array(input.message);
-      const { signature } = await this.#provider.signMessage(signedMessage);
+      const msgBytes = ensureUint8Array(input.message);
+      const { signature, signedMessage } = await this.#provider.signMessage(msgBytes);
       outputs.push({
-        signedMessage,
+        signedMessage: signedMessage ?? msgBytes,
         signature,
         signatureType: 'ed25519',
       });

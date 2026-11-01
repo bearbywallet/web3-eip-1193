@@ -269,7 +269,7 @@ export class BearbySolanaProvider {
   async signMessage(
     message: Uint8Array | string,
     display?: string
-  ): Promise<{ signature: Uint8Array; publicKey: SolanaPublicKey }> {
+  ): Promise<{ signature: Uint8Array; publicKey: SolanaPublicKey; signedMessage: Uint8Array }> {
     const msgBytes = ensureUint8Array(message);
     const response = (await this.#bridge.request({
       method: 'solana_signMessage',
@@ -287,6 +287,10 @@ export class BearbySolanaProvider {
     }
 
     const signature = this.#decodeSignature(rawSig);
+    const signedMessage =
+      typeof response?.signedMessage === 'string' && response.signedMessage.length > 0
+        ? hexToBytes(response.signedMessage)
+        : msgBytes;
     if (!this.publicKey && response?.publicKey) {
       this.publicKey = new SolanaPublicKey(response.publicKey);
       this.isConnected = true;
@@ -296,6 +300,7 @@ export class BearbySolanaProvider {
     return {
       signature,
       publicKey: pubKey,
+      signedMessage,
     };
   }
 
@@ -321,8 +326,8 @@ export class BearbySolanaProvider {
         : 'localhost';
 
     const messageText = createSignInMessageText(input || {}, address, domain);
-    const signedMessage = new TextEncoder().encode(messageText);
-    const { signature } = await this.signMessage(signedMessage, 'utf8');
+    const msgBytes = new TextEncoder().encode(messageText);
+    const { signature, signedMessage } = await this.signMessage(msgBytes, 'utf8');
 
     return {
       account: {
@@ -331,7 +336,7 @@ export class BearbySolanaProvider {
         chains: SOLANA_CHAINS,
         features: SOLANA_FEATURES,
       },
-      signedMessage,
+      signedMessage: signedMessage ?? msgBytes,
       signature,
       signatureType: 'ed25519',
     };
