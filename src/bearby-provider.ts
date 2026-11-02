@@ -75,8 +75,22 @@ export class BearbyProviderImpl implements BearbyProvider {
 
   get #isFlutterMode(): boolean {
     return typeof window !== 'undefined'
-      && typeof (window as any).flutter_inappwebview !== 'undefined'
-      && typeof (window as any).flutter_inappwebview.callHandler === 'function';
+      && typeof (window as any).webview_plus !== 'undefined'
+      && typeof (window as any).webview_plus.callHandler === 'function';
+  }
+
+  isConnected(): boolean {
+    return true;
+  }
+
+  async #waitForFlutterBridge(timeoutMs = 200): Promise<boolean> {
+    if (this.#isFlutterMode) return true;
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, 15));
+      if (this.#isFlutterMode) return true;
+    }
+    return this.#isFlutterMode;
   }
 
   constructor() {
@@ -166,7 +180,8 @@ export class BearbyProviderImpl implements BearbyProvider {
       } as ProviderRpcError);
     }
 
-    const result = this.#isFlutterMode
+    const isFlutter = this.#isFlutterMode || await this.#waitForFlutterBridge();
+    const result = isFlutter
       ? await this.#requestFlutter(payload)
       : await this.#requestExtension(payload);
 
@@ -194,7 +209,7 @@ export class BearbyProviderImpl implements BearbyProvider {
         ...meta,
       };
 
-      const flutterBridge = (typeof window !== 'undefined' && window) ? (window as any).flutter_inappwebview : null;
+      const flutterBridge = (typeof window !== 'undefined' && window) ? (window as any).webview_plus : null;
 
       if (!flutterBridge || typeof flutterBridge.callHandler !== 'function') {
         reject({

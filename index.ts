@@ -32,6 +32,9 @@ function setGlobalProperty(target: any, key: string, value: any): void {
   }
 
   if ((window as any).__bearbyInjected) {
+    if ((window as any).ethereum?.isBearby) {
+      announceProvider((window as any).ethereum);
+    }
     return;
   }
 
